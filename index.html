@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticker Konfigurator - Development</title>
+</head>
+<body>
+  <div style="padding: 40px; text-align: center;">
+    <h1>Sticker Konfigurator - Entwicklungsumgebung</h1>
+    <button id="open-configurator" style="padding: 15px 30px; font-size: 18px; cursor: pointer;">
+      Konfigurator öffnen
+    </button>
+  </div>
+
+  <div id="sticker-configurator-mount"></div>
+
+  <script type="module" src="/src/main.js"></script>
+  
+  <script>
+    // Beispiel-Daten für Entwicklung
+    document.getElementById('open-configurator').addEventListener('click', () => {
+      window.initStickerConfigurator({
+        productId: '12345',
+        productTitle: 'Basic T-Shirt',
+        productImage: 'https://via.placeholder.com/400x500/cccccc/ffffff?text=T-Shirt',
+        variantId: '67890',
+        canvasWidth: 400,
+        canvasHeight: 500,
+        stickers: [
+          {
+            id: '1',
+            variantId: 'sticker-1',
+            title: 'Herz Sticker',
+            image: 'https://via.placeholder.com/100x100/ff6b6b/ffffff?text=❤️',
+            price: 2.99,
+            width: 80,
+            height: 80
+          },
+          {
+            id: '2',
+            variantId: 'sticker-2',
+            title: 'Stern Sticker',
+            image: 'https://via.placeholder.com/100x100/ffd93d/ffffff?text=⭐',
+            price: 2.99,
+            width: 80,
+            height: 80
+          },
+          {
+            id: '3',
+            variantId: 'sticker-3',
+            title: 'Blumen Sticker',
+            image: 'https://via.placeholder.com/100x100/6bcf7f/ffffff?text=🌸',
+            price: 3.49,
+            width: 80,
+            height: 80
+          },
+          {
+            id: '4',
+            variantId: 'sticker-4',
+            title: 'Peace Sticker',
+            image: 'https://via.placeholder.com/100x100/4d96ff/ffffff?text=☮️',
+            price: 2.99,
+            width: 80,
+            height: 80
+          }
+        ]
+      })
+    })
+  </script>
+</body>
+</html>
