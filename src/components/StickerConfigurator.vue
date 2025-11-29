@@ -1,12 +1,14 @@
 <template>
-  <div class="sticker-configurator-modal" @click.self="closeModal">
-    <div class="configurator-container">
-      <div class="configurator-header">
+  <div class="sticker-configurator-modal frsn-configurator" @click.self="closeModal">
+    <div class="frsn-configurator-container">
+      <div class="frsn-configurator-header">
         <h2>Sticker Konfigurator</h2>
-        <button class="close-btn" @click="closeModal">×</button>
+        <button class="close-btn" @click="closeModal">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12"></path></svg>
+        </button>
       </div>
 
-      <div class="configurator-body">
+      <div class="frsn-configurator-body">
         <!-- Canvas Bereich -->
         <div class="canvas-section">
           <h3>{{ productTitle }}</h3>
@@ -36,38 +38,14 @@
                   @click.stop="removeSticker(index)"
                   title="Entfernen"
                 >
-                  ×
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12"></path></svg>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Steuerung für ausgewählten Sticker -->
-          <div v-if="selectedStickerIndex !== null" class="sticker-controls">
-            <h4>Sticker Position & Größe</h4>
-            <div class="control-group">
-              <label>
-                Größe: {{ placedStickers[selectedStickerIndex].scale }}%
-                <input
-                  type="range"
-                  min="50"
-                  max="150"
-                  v-model.number="placedStickers[selectedStickerIndex].scale"
-                >
-              </label>
-            </div>
-            <div class="control-group">
-              <label>
-                Rotation: {{ placedStickers[selectedStickerIndex].rotation }}°
-                <input
-                  type="range"
-                  min="-180"
-                  max="180"
-                  v-model.number="placedStickers[selectedStickerIndex].rotation"
-                >
-              </label>
-            </div>
-          </div>
+          <StickerCustomizer v-if="selectedStickerIndex !== null" :selectedSticker="placedStickers[selectedStickerIndex]"></StickerCustomizer>
         </div>
 
         <!-- Sticker Auswahl -->
@@ -90,7 +68,7 @@
         </div>
       </div>
 
-      <div class="configurator-footer">
+      <div class="frsn-configurator-footer">
         <div class="summary">
           <p>
             <strong>{{ placedStickers.length }}</strong> Sticker ausgewählt
@@ -115,8 +93,11 @@
 </template>
 
 <script>
+import StickerCustomizer from "./StickerCustomizer.vue";
+
 export default {
   name: 'StickerConfigurator',
+  components: {StickerCustomizer},
   props: {
     productId: {
       type: String,
@@ -177,8 +158,10 @@ export default {
         x: this.canvasWidth / 2 - 40,
         y: this.canvasHeight / 2 - 40,
         scale: 100,
-        rotation: 0
+        rotation: 0,
+        variants: sticker.variants,
       })
+      console.log(sticker)
       this.selectedStickerIndex = this.placedStickers.length - 1
     },
     
@@ -354,51 +337,72 @@ export default {
 }
 </script>
 
-<style scoped>
-.sticker-configurator-modal {
+<style scoped lang="scss">
+.frsn-configurator {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   padding: 20px;
+  &-container {
+    background: #000;
+    max-width: 1200px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #fff;
+  }
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+  }
+  &-body {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    padding: 30px;
+    overflow-y: scroll;
+    flex: 1;
+    .sticker-selection,
+    .canvas-section {
+      h3 {
+        margin: 0 0 20px 0;
+        font-size: 18px;
+      }
+    }
+  }
+  &-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #e5e5e5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow-y: scroll;
+  }
 }
 
-.configurator-container {
-  background: white;
-  border-radius: 12px;
-  max-width: 1200px;
-  width: 100%;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.configurator-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.configurator-header h2 {
-  margin: 0;
-  font-size: 24px;
-}
 
 .close-btn {
   background: none;
   border: none;
   font-size: 36px;
   cursor: pointer;
-  color: #666;
+  color: #fff;
   line-height: 1;
   padding: 0;
   width: 36px;
@@ -406,27 +410,11 @@ export default {
 }
 
 .close-btn:hover {
-  color: #000;
-}
-
-.configurator-body {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 30px;
-  padding: 30px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.canvas-section h3,
-.sticker-selection h3 {
-  margin: 0 0 20px 0;
-  font-size: 18px;
+  color: rgba(255, 255, 255, 0.53);
 }
 
 .canvas-wrapper {
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: #fff;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -446,7 +434,7 @@ export default {
   position: absolute;
   cursor: move;
   user-select: none;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   transition: border-color 0.2s;
 }
 
@@ -483,37 +471,12 @@ export default {
 .placed-sticker:hover .remove-sticker-btn,
 .placed-sticker.active .remove-sticker-btn {
   display: flex;
-}
-
-.sticker-controls {
-  margin-top: 20px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.sticker-controls h4 {
-  margin: 0 0 15px 0;
-  font-size: 16px;
-}
-
-.control-group {
-  margin-bottom: 15px;
-}
-
-.control-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
-  color: #666;
-}
-
-.control-group input[type="range"] {
-  width: 100%;
-}
-
-.sticker-selection {
-  overflow-y: auto;
+  padding: 0;
+  svg {
+    width: 1rem;
+    height: 1rem;
+    path {stroke-width: 3px;}
+  }
 }
 
 .sticker-grid {
@@ -523,8 +486,7 @@ export default {
 }
 
 .sticker-item {
-  border: 2px solid #e5e5e5;
-  border-radius: 8px;
+  border: 1px dashed #fff;
   padding: 15px;
   text-align: center;
   cursor: pointer;
@@ -538,7 +500,6 @@ export default {
 }
 
 .sticker-item img {
-  width: 80px;
   height: 80px;
   object-fit: contain;
   margin-bottom: 10px;
@@ -550,16 +511,8 @@ export default {
 }
 
 .sticker-price {
-  font-weight: bold;
-  color: #007bff;
-}
-
-.configurator-footer {
-  padding: 20px 30px;
-  border-top: 1px solid #e5e5e5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-weight: bolder;
+  color: #fff;
 }
 
 .summary {
@@ -572,7 +525,7 @@ export default {
 
 .total-price {
   font-size: 18px;
-  color: #007bff;
+  color: #fff;
 }
 
 .actions {
@@ -582,8 +535,7 @@ export default {
 
 .btn {
   padding: 12px 24px;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s;
@@ -595,26 +547,30 @@ export default {
 }
 
 .btn-primary {
-  background: #007bff;
-  color: white;
+  background: rgba(255, 255, 255, 1);
+  border: 1px solid #ffff;
+  color: #000;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #0056b3;
+  background: rgba(255, 255, 255, 0);
+  color: #fff;
 }
 
 .btn-secondary {
-  background: #6c757d;
+  background: rgba(255, 255, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0);
   color: white;
 }
 
 .btn-secondary:hover {
-  background: #545b62;
+  background: #fff;
+  color: #000;
 }
 
 /* Responsive */
 @media (max-width: 968px) {
-  .configurator-body {
+  .frsn-configurator-body {
     grid-template-columns: 1fr;
   }
   
@@ -624,11 +580,11 @@ export default {
 }
 
 @media (max-width: 640px) {
-  .configurator-header {
+  .frsn-configurator-header {
     padding: 15px 20px;
   }
   
-  .configurator-body {
+  .frsn-configurator-body {
     padding: 20px;
   }
   
